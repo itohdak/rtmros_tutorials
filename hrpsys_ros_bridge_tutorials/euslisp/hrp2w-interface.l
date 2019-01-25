@@ -311,7 +311,7 @@
 		  (send* self :go-pos-unsafe-no-wait args)
 		  (send self :go-pos-unsafe-wait))
   (:go-pos-unsafe-no-wait
-   (x y &optional (d 0)) ;; [m] [m] [degree]
+   (x y &optional (d 0) &key (speed-gain-vel 0.4) (speed-gain-rad 0.8)) ;; [m] [m] [degree]
    (ros::ros-info "go-pos-unsafe (x y d) = (~A ~A ~A)" x y d)
    (unless joint-action-enable
      (let ((orig-coords (send robot :copy-worldcoords))
@@ -326,7 +326,8 @@
    (unless move-base-trajectory-action
      (ros::ros-warn ":go-pose-unsafe-no-wait is disabled. (move-base-trajectory-action is not found)")
      (return-from :go-pos-unsafe-no-wait t))
-   (let ((maxvel 0.295) (maxrad 0.495)
+   (let ((maxvel (* speed-gain-vel 0.295)) (maxrad (* speed-gain-rad 0.495))
+	 ;; (maxvel 0.295) (maxrad 0.495)
          msec)
      ;; package://pr2_base_trajectory_action/config/pr2_base_link.yaml
      ;; 80% of maxvel = 0.3[m/sec]
